@@ -1,0 +1,67 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Gluten', cursive;
+}
+
+#top {
+  text-align: center;
+  margin: 0 auto;
+}
+
+#top h1 {
+  font-size: 2em;
+}
+
+#content {
+  margin-top: 100px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.hour {
+  padding: 15px 20px;
+  border: 1px solid black;
+}
+
+.day {
+  border: 1px solid black;
+}
+
+#personalGrid {
+  display: grid;
+  justify-items: center;
+  grid:
+  [label-start] "filler monL tueL wedL thurL friL satL sunL"50px [days] "timesL mon tue wed thur fri sat sun"390px / [filler]150px  [monL]70px  [tueL]70px  [wedL]70px  [thurL]70px  [friL]70px  [satL]70px  [sunL]70px
+}
+
+#groupGrid {
+  display: grid;
+  justify-items: center;
+  grid:
+  [label-start] "filler monL tueL wedL thurL friL satL sunL"50px [days] "timesL mon tue wed thur fri sat sun"390px / [filler]150px  [monL]70px  [tueL]70px  [wedL]70px  [thurL]70px  [friL]70px  [satL]70px  [sunL]70px
+}
+
+#timeL .hour{
+  padding: 6px;
+  border: 0ch;
+}
+
+#timesL{
+  padding: 5px 30px;
+}
+
+#timeLabels .hour{
+  padding: 6.5px;
+  width: 130px;
+}
+
+#content {
+  display: flex;
+}
+
+#contentsection {
+  margin: 20px;
+}

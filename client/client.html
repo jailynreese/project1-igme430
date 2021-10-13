@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Project1</title>
+  <link rel="stylesheet" type="text/css" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gluten:wght@400;500;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+  <script type="text/babel">
+          const personalGrid = document.querySelector('#personalGrid');
+          const groupGrid = document.querySelector('#groupGrid');
+
+          let names = [];
+          const date = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun'];
+          const startTime = 7;
+          const endTime = 19;
+
+          let week;
+  
+          //creates columns within grid
+          const addDayColumn = (day, name, startTime, endTime, grid) => {
+            const column = document.createElement('div');
+            column.id = day;
+            column.className = 'day';
+            grid.append(column);
+
+            for(let i = startTime; i < endTime; i++){
+              const slot = document.createElement('div');
+              slot.id = `${day, i}`;
+              slot.day = day;
+              slot.hour = i;
+              slot.className = 'hour';
+              slot.value = false;
+              column.append(slot);
+              
+              if(grid.id === 'personalGrid'){
+                //when slot is clicked, sends data to server
+                slot.addEventListener('click', (e) => {
+                    if(slot.value === false) {
+                      slot.action = '/addAvailability';
+                      slot.value = true;
+                      slot.style.backgroundColor = 'purple';
+                    } else {
+                      slot.action = '/removeAvailability';
+                      slot.value = false;
+                      slot.style.backgroundColor = 'white';
+                    }
+                    sendTimeSlot(e, name, slot.day, slot.hour, slot.action);
+                });
+              } else {
+                getTimeSlot(slot.day, slot.hour);
+                slot.addEventListener('mouseover', (e) => {
+                  let freePpl = [];
+                  switch (slot.day) {
+                    case 'mon':
+                    if(week.tue[slot.hour-7] === undefined | week.tue[slot.hour-7].length === 0){
+                      document.querySelector('#pplAvailable').innerHTML = `No one available`;
+                    } else {
+                      document.querySelector('#pplAvailable').innerHTML = `People available: ${week.tue[slot.hour-7].toString()}`;
+                    } 
+                    case 'tue':
+                      freePpl = week.tue[slot.hour-7];
+                      break;
+                    case 'wed':
+                      freePpl = week.wed[slot.hour-7];
+                      break;
+                    case 'thur':
+                      freePpl = week.thur[slot.hour-7];
+                      break;
+                    case 'fri':
+                      freePpl = week.fri[slot.hour-7];
+                      break;
+                    case 'sat':
+                      freePpl = week.sat[slot.hour-7];
+                      break;
+                    case 'sun':
+                      freePpl = week.sun[slot.hour-7];
+                      break;
+                    default:
+                      break;
+                  }
+                  slot.style.backgroundColor = 'hsl(246, 100%, 86%)';
+                                   
+                });
+              }       
+            }
+          };
+
+          const sendTimeSlot = (e, name, day, i, action) => {
+            e.preventDefault();
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', action);
+      
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      
+            //xhr.onload = () => handleResponse(xhr);
+      
+            const formData = `name=${name}&day=${day}&hour=${i}`;
+            xhr.send(formData);
+      
+            return false;
+          };
+
+          const getTimeSlot = (day, i) => {
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', '/getAvailability');
+      
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      
+            xhr.onload = () => {
+              week = JSON.parse(xhr.response);
+              console.log(week);
+            };
+      
+            const formData = `day=${day}&hour=${i}`;
+            xhr.send(formData);
+      
+            return false;
+          }
+
+          //creates grid
+          const createGrid = (grid, name, date, startTime, endTime) => {
+              grid.innerHTML += `<h3 id="filler"></h3>`;
+
+              grid.innerHTML += `
+                <h3 id="monL">Mon</h3>
+                <h3 id="tueL">Tue</h3>
+                <h3 id="wedL">Wed</h3>
+                <h3 id="thursL">Thur</h3>
+                <h3 id="friL">Fri</h3>
+                <h3 id="satL">Sat</h3>
+                <h3 id="sunL">Sun</h3>`;
+              
+
+              let timeLabels = `<div id='timeLabels'>`; 
+
+              for(let i = startTime; i < endTime; i++){
+                timeLabels += `<div class="hour">${i}:00 - ${i+1}:00</div>`;
+              }
+
+              timeLabels += `</div>`;
+              grid.innerHTML += timeLabels;
+
+              addDayColumn('mon', name, startTime, endTime, grid);
+              addDayColumn('tue', name, startTime, endTime, grid);
+              addDayColumn('wed', name, startTime, endTime, grid);
+              addDayColumn('thur', name, startTime, endTime, grid);
+              addDayColumn('fri', name, startTime, endTime, grid);
+              addDayColumn('sat', name, startTime, endTime, grid);
+              addDayColumn('sun', name, startTime, endTime, grid);
+                  
+          };
+      
+          const init = () => {
+            const eventForm = document.querySelector('#eventForm');
+            
+
+            createGrid(groupGrid, name, date, startTime, endTime);
+
+            eventForm.addEventListener('submit', function(e){
+              let name = eventForm.querySelector('#name').value;
+
+              //ensures appropriate time slot
+              if(name !== ''){
+                document.querySelector('#personalGrid').innerHTML = '';
+                document.querySelector('#personalGridL').innerHTML = 'Personal Availability';
+                names.push(name);
+                createGrid(personalGrid, name, date, startTime, endTime);               
+              } else {
+                personalGrid.innerHTML = `<h2>Please enter a valid name.</h2>`
+              } 
+            });
+          };
+
+      
+          window.onload = init;
+        </script>
+</head>
+
+<body>
+  <h1>Find the Time</h1>
+  <form id="eventForm" action="/addEvent" method="post">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name"><br>
+
+    <input type="submit" value="Add Availability"></input>
+  </form>
+  <div id="content">
+    <div class="contentsection">
+      <h2 id="personalGridL"></h2>
+      <div id="personalGrid"></div>
+    </div>
+    <div class="contentsection">
+      <h2 id="groupGridL">General Availability</h2>
+      <div id="groupGrid"></div>
+    </div>
+    <h3 id="pplAvailable"></h3>
+  </div>
+
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "project1-igme430",
+  "version": "1.0.0",
+  "description": "project1",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "pretest": "eslint ./src/ --fix",
+    "test": "echo \"Tests Complete\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jailynreese/project1-igme430.git"
+  },
+  "author": "jailyn talavera",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jailynreese/project1-igme430/issues"
+  },
+  "homepage": "https://github.com/jailynreese/project1-igme430#readme",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.25.1"
+  }
+}
